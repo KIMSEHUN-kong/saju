@@ -111,14 +111,33 @@ const LUCKY_DIRECTIONS = ['동쪽', '서쪽', '남쪽', '북쪽', '동북쪽', '
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 데이터 가져오기
-    const sajuDataStr = sessionStorage.getItem('sajuData');
-    if (!sajuDataStr) {
-        window.location.href = 'index.html';
-        return;
+    // URL 파라미터에서 데이터 확인 (공유 링크용)
+    const urlParams = new URLSearchParams(window.location.search);
+    let data;
+
+    if (urlParams.has('y')) {
+        // URL 파라미터에서 데이터 가져오기
+        data = {
+            year: urlParams.get('y'),
+            month: urlParams.get('m'),
+            day: urlParams.get('d'),
+            hour: urlParams.get('h') || '0',
+            gender: urlParams.get('g') || 'male',
+            calendar: urlParams.get('c') || 'solar',
+            type: urlParams.get('t') || 'today'
+        };
+        // sessionStorage에도 저장
+        sessionStorage.setItem('sajuData', JSON.stringify(data));
+    } else {
+        // sessionStorage에서 데이터 가져오기
+        const sajuDataStr = sessionStorage.getItem('sajuData');
+        if (!sajuDataStr) {
+            window.location.href = 'index.html';
+            return;
+        }
+        data = JSON.parse(sajuDataStr);
     }
 
-    const data = JSON.parse(sajuDataStr);
     const type = data.type || 'today';
 
     // 사주 계산
@@ -357,63 +376,41 @@ function setupEventListeners() {
         });
     });
 
-    // 카카오 SDK 초기화
-    // ⚠️ 아래 'YOUR_KAKAO_JAVASCRIPT_KEY'를 실제 카카오 앱 키로 교체하세요
-    // 카카오 개발자 센터: https://developers.kakao.com
-    if (window.Kakao && !Kakao.isInitialized()) {
-        Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY');
-    }
-
-    // 공유 버튼
-    document.getElementById('share-kakao')?.addEventListener('click', shareKakaoResult);
-    document.getElementById('share-link')?.addEventListener('click', copyLink);
-    document.getElementById('header-share')?.addEventListener('click', shareKakaoResult);
+    // 결과 링크 복사 버튼
+    document.getElementById('copy-result')?.addEventListener('click', copyResultLink);
+    document.getElementById('header-share')?.addEventListener('click', copyResultLink);
 }
 
-// 카카오톡 공유 - 운세 결과 포함
-function shareKakaoResult() {
+// 결과 링크 생성 및 복사
+function copyResultLink() {
     const sajuData = JSON.parse(sessionStorage.getItem('sajuData'));
-    const ilganSummary = document.querySelector('.ilgan-summary h3')?.textContent || '사주팔자 운세';
-    const fortuneTitle = document.getElementById('fortune-title')?.textContent || '오늘의 운세';
 
-    // 카카오 SDK가 초기화되지 않았거나 앱키가 없으면 기본 공유
-    if (!window.Kakao || !Kakao.isInitialized() || Kakao.Auth === undefined) {
-        // Web Share API 사용 (모바일)
-        if (navigator.share) {
-            navigator.share({
-                title: '오늘의 사주 - 나의 운세 결과',
-                text: `${ilganSummary}\n${fortuneTitle} 결과를 확인해보세요!`,
-                url: window.location.origin
-            });
-        } else {
-            alert('카카오톡 공유를 사용하려면 카카오 앱 키 설정이 필요합니다.\n링크 복사를 이용해주세요!');
-        }
-        return;
-    }
-
-    // 카카오 공유
-    Kakao.Share.sendDefault({
-        objectType: 'feed',
-        content: {
-            title: '오늘의 사주 - 나의 운세 결과',
-            description: `${ilganSummary}\n나도 사주팔자 운세를 확인해봤어요!`,
-            imageUrl: 'https://kimsehun-kong.github.io/saju/og-image.png', // OG 이미지 URL
-            link: {
-                mobileWebUrl: window.location.origin,
-                webUrl: window.location.origin,
-            },
-        },
-        itemContent: {
-            profileText: fortuneTitle,
-        },
-        buttons: [
-            {
-                title: '나도 운세 보기',
-                link: {
-                    mobileWebUrl: window.location.origin,
-                    webUrl: window.location.origin,
-                },
-            },
-        ],
+    // URL 파라미터 생성
+    const params = new URLSearchParams({
+        y: sajuData.year,
+        m: sajuData.month,
+        d: sajuData.day,
+        h: sajuData.hour,
+        g: sajuData.gender,
+        c: sajuData.calendar,
+        t: sajuData.type
     });
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+    // 클립보드에 복사
+    navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+            alert('결과 링크가 복사되었습니다!\n친구에게 공유해보세요 🎉');
+        })
+        .catch(() => {
+            // fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = shareUrl;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('결과 링크가 복사되었습니다!\n친구에게 공유해보세요 🎉');
+        });
 }
