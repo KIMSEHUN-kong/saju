@@ -110,24 +110,25 @@ const LUCKY_DIRECTIONS = ['동쪽', '서쪽', '남쪽', '북쪽', '동북쪽', '
 // 결과 페이지 렌더링
 // ===================================
 
+// 공유 모드 여부
+let isSharedView = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     // URL 파라미터에서 데이터 확인 (공유 링크용)
     const urlParams = new URLSearchParams(window.location.search);
     let data;
 
-    if (urlParams.has('y')) {
-        // URL 파라미터에서 데이터 가져오기
-        data = {
-            year: urlParams.get('y'),
-            month: urlParams.get('m'),
-            day: urlParams.get('d'),
-            hour: urlParams.get('h') || '0',
-            gender: urlParams.get('g') || 'male',
-            calendar: urlParams.get('c') || 'solar',
-            type: urlParams.get('t') || 'today'
-        };
-        // sessionStorage에도 저장
-        sessionStorage.setItem('sajuData', JSON.stringify(data));
+    if (urlParams.has('s')) {
+        // 공유 링크에서 데이터 복호화
+        try {
+            const decoded = atob(urlParams.get('s'));
+            data = JSON.parse(decoded);
+            isSharedView = true; // 공유 모드 활성화
+            // ⚠️ 공유 링크에서는 sessionStorage에 저장하지 않음!
+        } catch (e) {
+            window.location.href = 'index.html';
+            return;
+        }
     } else {
         // sessionStorage에서 데이터 가져오기
         const sajuDataStr = sessionStorage.getItem('sajuData');
@@ -155,8 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('result-title').textContent = fortuneData.title;
     document.getElementById('fortune-title').textContent = fortuneData.title;
 
-    // 1. 생년월일 정보
-    document.getElementById('birth-info').textContent = formatBirthInfo(data);
+    // 1. 생년월일 정보 (공유 모드에서는 숨김)
+    if (isSharedView) {
+        document.getElementById('birth-info').textContent = '공유된 운세 결과입니다';
+        document.getElementById('birth-info').style.color = '#D4AF37';
+    } else {
+        document.getElementById('birth-info').textContent = formatBirthInfo(data);
+    }
 
     // 2. 사주 테이블 렌더링
     renderSajuTable(saju);
@@ -343,8 +349,10 @@ function renderMoreMenu(currentType) {
     let html = '';
     menus.forEach(menu => {
         if (menu.type !== currentType) {
+            // 공유 모드면 input.html로, 아니면 바로 결과로
+            const href = isSharedView ? `input.html?type=${menu.type}` : '#';
             html += `
-                <a href="#" class="more-item" data-type="${menu.type}">
+                <a href="${href}" class="more-item" data-type="${menu.type}">
                     <span>${menu.icon}</span>
                     <span>${menu.title}</span>
                 </a>
@@ -354,17 +362,19 @@ function renderMoreMenu(currentType) {
 
     container.innerHTML = html;
 
-    // 클릭 시 type만 변경하고 바로 결과 페이지로
-    container.querySelectorAll('.more-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const newType = item.dataset.type;
-            const sajuData = JSON.parse(sessionStorage.getItem('sajuData'));
-            sajuData.type = newType;
-            sessionStorage.setItem('sajuData', JSON.stringify(sajuData));
-            window.location.href = 'loading.html';
+    // 공유 모드가 아닐 때만 바로 결과로 이동
+    if (!isSharedView) {
+        container.querySelectorAll('.more-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const newType = item.dataset.type;
+                const sajuData = JSON.parse(sessionStorage.getItem('sajuData'));
+                sajuData.type = newType;
+                sessionStorage.setItem('sajuData', JSON.stringify(sajuData));
+                window.location.href = 'loading.html';
+            });
         });
-    });
+    }
 }
 
 function setupEventListeners() {
@@ -376,27 +386,45 @@ function setupEventListeners() {
         });
     });
 
-    // 결과 링크 복사 버튼
-    document.getElementById('copy-result')?.addEventListener('click', copyResultLink);
-    document.getElementById('header-share')?.addEventListener('click', copyResultLink);
+    // 공유 모드 처리
+    if (isSharedView) {
+        // 공유 버튼 숨기고 "나도 보기" 버튼으로 변경
+        const headerShare = document.getElementById('header-share');
+        if (headerShare) {
+            headerShare.textContent = '나도 보기';
+            headerShare.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        // 결과 링크 복사 버튼을 "나도 운세 보기"로 변경
+        const copyBtn = document.getElementById('copy-result');
+        if (copyBtn) {
+            copyBtn.innerHTML = '<span>✨</span> 나도 운세 보기';
+            copyBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        // 공유 섹션 문구 변경
+        const shareSection = document.querySelector('.share-section > p');
+        if (shareSection) {
+            shareSection.textContent = '나도 내 운세를 확인해보세요!';
+        }
+    } else {
+        // 결과 링크 복사 버튼
+        document.getElementById('copy-result')?.addEventListener('click', copyResultLink);
+        document.getElementById('header-share')?.addEventListener('click', copyResultLink);
+    }
 }
 
 // 결과 링크 생성 및 복사
 function copyResultLink() {
     const sajuData = JSON.parse(sessionStorage.getItem('sajuData'));
 
-    // URL 파라미터 생성
-    const params = new URLSearchParams({
-        y: sajuData.year,
-        m: sajuData.month,
-        d: sajuData.day,
-        h: sajuData.hour,
-        g: sajuData.gender,
-        c: sajuData.calendar,
-        t: sajuData.type
-    });
-
-    const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    // 데이터를 base64로 인코딩 (생년월일 직접 노출 방지)
+    const encoded = btoa(JSON.stringify(sajuData));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encoded}`;
 
     // 클립보드에 복사
     navigator.clipboard.writeText(shareUrl)
