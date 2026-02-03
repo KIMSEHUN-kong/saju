@@ -18,28 +18,39 @@ class FortuneResult extends HTMLElement {
 
     const fortune = this.getFortune(year, month, day, hour);
 
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const bgColor = isDark ? '#3d3d54' : '#ffffff';
+    const borderColor = isDark ? '#4a4a5a' : '#c9b7a2';
+    const titleColor = isDark ? '#d4a574' : '#5a3e2b';
+    const textColor = isDark ? '#e0e0e0' : '#333';
+    const shadowColor = isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)';
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
           display: block;
           padding: 2rem;
-          background-color: #ffffff;
+          background-color: ${bgColor};
           border-radius: 8px;
-          border: 1px solid #c9b7a2;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+          border: 1px solid ${borderColor};
+          box-shadow: 0 4px 15px ${shadowColor};
           margin-top: 2rem;
+          transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         h3 {
           font-size: 1.8rem;
           font-weight: 700;
-          color: #5a3e2b;
+          color: ${titleColor};
           margin-bottom: 1rem;
-          border-bottom: 2px solid #c9b7a2;
+          border-bottom: 2px solid ${borderColor};
           padding-bottom: 0.5rem;
+          transition: color 0.3s ease, border-color 0.3s ease;
         }
         p {
           font-size: 1.1rem;
           line-height: 1.8;
+          color: ${textColor};
+          transition: color 0.3s ease;
         }
       </style>
       <div>
@@ -82,6 +93,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthInput = document.getElementById('month');
     const dayInput = document.getElementById('day');
     const hourInput = document.getElementById('hour');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    // 테마 초기화
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 테마 토글 기능
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
 
     submitBtn.addEventListener('click', () => {
         const year = yearInput.value;
