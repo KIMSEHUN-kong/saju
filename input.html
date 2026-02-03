@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>생년월일 입력 - 오늘의 사주</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 상단 배너 광고 -->
+    <!-- AD: TOP_BANNER - 320x100 or Responsive -->
+
+    <div class="container">
+        <header class="sub-header">
+            <a href="index.html" class="back-btn">← 홈</a>
+            <h1 id="page-title">운세 보기</h1>
+        </header>
+
+        <main class="input-section">
+            <div class="input-card">
+                <div class="input-header">
+                    <span class="input-icon" id="type-icon">🌅</span>
+                    <h2 id="type-title">오늘의 운세</h2>
+                    <p id="type-desc">생년월일시를 입력해주세요</p>
+                </div>
+
+                <form id="saju-form" class="saju-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">태어난 해</label>
+                            <select id="year" required>
+                                <option value="">년도 선택</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="month">월</label>
+                            <select id="month" required>
+                                <option value="">월 선택</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="day">일</label>
+                            <select id="day" required>
+                                <option value="">일 선택</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hour">태어난 시</label>
+                            <select id="hour" required>
+                                <option value="">시 선택</option>
+                                <option value="0">자시 (23:30~01:30)</option>
+                                <option value="1">축시 (01:30~03:30)</option>
+                                <option value="2">인시 (03:30~05:30)</option>
+                                <option value="3">묘시 (05:30~07:30)</option>
+                                <option value="4">진시 (07:30~09:30)</option>
+                                <option value="5">사시 (09:30~11:30)</option>
+                                <option value="6">오시 (11:30~13:30)</option>
+                                <option value="7">미시 (13:30~15:30)</option>
+                                <option value="8">신시 (15:30~17:30)</option>
+                                <option value="9">유시 (17:30~19:30)</option>
+                                <option value="10">술시 (19:30~21:30)</option>
+                                <option value="11">해시 (21:30~23:30)</option>
+                                <option value="-1">모름</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group gender-group">
+                        <label>성별</label>
+                        <div class="gender-buttons">
+                            <input type="radio" id="male" name="gender" value="male" required>
+                            <label for="male" class="gender-btn">남성</label>
+                            <input type="radio" id="female" name="gender" value="female">
+                            <label for="female" class="gender-btn">여성</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group calendar-group">
+                        <label>음력/양력</label>
+                        <div class="calendar-buttons">
+                            <input type="radio" id="solar" name="calendar" value="solar" checked>
+                            <label for="solar" class="calendar-btn">양력</label>
+                            <input type="radio" id="lunar" name="calendar" value="lunar">
+                            <label for="lunar" class="calendar-btn">음력</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span>운세 확인하기</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- 중간 피드 광고 -->
+        <!-- AD: FEED_NATIVE - In-feed Native Ad -->
+
+        <section class="tip-section">
+            <div class="tip-card">
+                <h3>💡 정확한 시간이 중요해요</h3>
+                <p>사주팔자는 연, 월, 일, 시 4개의 기둥으로 이루어집니다. 태어난 시간까지 정확히 입력하면 더 자세한 운세를 볼 수 있어요.</p>
+            </div>
+        </section>
+
+        <footer class="main-footer">
+            <p>© 2026 오늘의 사주</p>
+        </footer>
+    </div>
+
+    <!-- 하단 고정 광고 -->
+    <!-- AD: BOTTOM_STICKY - 320x50 Anchor Ad -->
+
+    <script src="main.js"></script>
+    <script>
+        // 페이지 타입에 따른 UI 업데이트
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type') || 'today';
+
+            const typeConfig = {
+                today: { icon: '🌅', title: '오늘의 운세', desc: '오늘 하루의 기운을 확인하세요' },
+                weekly: { icon: '📅', title: '주간·월간 운세', desc: '이번 주와 이번 달의 흐름을 봅니다' },
+                year2026: { icon: '✨', title: '2026년 운세', desc: '병오년 한 해 운세를 확인하세요' },
+                lifetime: { icon: '📜', title: '평생 사주', desc: '타고난 기운과 인생의 흐름을 봅니다' },
+                luck: { icon: '🍀', title: '행운 가이드', desc: '오늘의 행운 정보를 확인하세요' }
+            };
+
+            const config = typeConfig[type] || typeConfig.today;
+            document.getElementById('type-icon').textContent = config.icon;
+            document.getElementById('type-title').textContent = config.title;
+            document.getElementById('type-desc').textContent = config.desc;
+            document.getElementById('page-title').textContent = config.title;
+
+            // 년도 옵션 생성
+            const yearSelect = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= 1920; y--) {
+                const option = document.createElement('option');
+                option.value = y;
+                option.textContent = y + '년';
+                yearSelect.appendChild(option);
+            }
+
+            // 월 옵션 생성
+            const monthSelect = document.getElementById('month');
+            for (let m = 1; m <= 12; m++) {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = m + '월';
+                monthSelect.appendChild(option);
+            }
+
+            // 일 옵션 생성
+            const daySelect = document.getElementById('day');
+            for (let d = 1; d <= 31; d++) {
+                const option = document.createElement('option');
+                option.value = d;
+                option.textContent = d + '일';
+                daySelect.appendChild(option);
+            }
+
+            // 폼 제출
+            document.getElementById('saju-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const formData = {
+                    type: type,
+                    year: document.getElementById('year').value,
+                    month: document.getElementById('month').value,
+                    day: document.getElementById('day').value,
+                    hour: document.getElementById('hour').value,
+                    gender: document.querySelector('input[name="gender"]:checked')?.value,
+                    calendar: document.querySelector('input[name="calendar"]:checked')?.value
+                };
+
+                // sessionStorage에 저장
+                sessionStorage.setItem('sajuData', JSON.stringify(formData));
+
+                // 로딩 페이지로 이동
+                window.location.href = 'loading.html';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운세 결과 - 오늘의 사주</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- 만세력 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar@0.3.6/dist/korean-lunar-calendar.min.js"></script>
+</head>
+<body>
+    <!-- 상단 배너 광고 -->
+    <!-- AD: TOP_BANNER - 320x100 or Responsive -->
+
+    <div class="container">
+        <header class="result-header">
+            <a href="index.html" class="back-btn">← 홈</a>
+            <h1 id="result-title">운세 결과</h1>
+            <button class="share-btn" id="header-share">공유</button>
+        </header>
+
+        <!-- 1. 사주 원국 결과 요약 카드 -->
+        <section class="result-card saju-card">
+            <div class="card-header">
+                <h2>📜 당신의 사주팔자</h2>
+                <p id="birth-info"></p>
+            </div>
+
+            <div class="saju-table">
+                <div class="saju-row header-row">
+                    <div class="saju-cell">시주</div>
+                    <div class="saju-cell">일주</div>
+                    <div class="saju-cell">월주</div>
+                    <div class="saju-cell">연주</div>
+                </div>
+                <div class="saju-row cheongan-row" id="cheongan-row">
+                    <!-- JS로 생성 -->
+                </div>
+                <div class="saju-row jiji-row" id="jiji-row">
+                    <!-- JS로 생성 -->
+                </div>
+            </div>
+
+            <div class="ilgan-summary" id="ilgan-summary">
+                <!-- JS로 생성 -->
+            </div>
+        </section>
+
+        <!-- 상단 광고 -->
+        <!-- AD: RESULT_TOP - Rectangle Ad 300x250 -->
+
+        <!-- 2. 오행 분포 그래프 -->
+        <section class="result-card energy-card">
+            <div class="card-header">
+                <h2>⚡ 오행 에너지 분석</h2>
+            </div>
+
+            <div class="energy-chart" id="energy-chart">
+                <!-- JS로 생성 -->
+            </div>
+
+            <div class="energy-summary" id="energy-summary">
+                <!-- JS로 생성 -->
+            </div>
+        </section>
+
+        <!-- 오행 분석 아래 광고 -->
+        <!-- AD: AFTER_CHART - In-article Ad -->
+
+        <!-- 3. 상세 운세 풀이 -->
+        <section class="result-card fortune-card">
+            <div class="card-header">
+                <h2 id="fortune-title">🌟 오늘의 운세</h2>
+            </div>
+
+            <div class="fortune-content" id="fortune-content">
+                <!-- JS로 생성 - 타입에 따라 다른 내용 -->
+            </div>
+        </section>
+
+        <!-- 중간 광고 1 -->
+        <!-- AD: MID_CONTENT_1 - In-article Ad -->
+
+        <!-- 4. 세부 운세 (재물/연애/건강/직업) -->
+        <section class="result-card detail-card">
+            <div class="card-header">
+                <h2>📊 세부 운세</h2>
+            </div>
+
+            <div class="detail-accordion" id="detail-accordion">
+                <!-- JS로 생성 -->
+            </div>
+        </section>
+
+        <!-- 중간 광고 2 -->
+        <!-- AD: MID_CONTENT_2 - In-article Ad -->
+
+        <!-- 5. 행운 가이드 -->
+        <section class="result-card luck-card">
+            <div class="card-header">
+                <h2>🍀 오늘의 행운 가이드</h2>
+            </div>
+
+            <div class="luck-items" id="luck-items">
+                <!-- JS로 생성 -->
+            </div>
+
+            <div class="share-section">
+                <p>친구에게도 행운을 나눠주세요!</p>
+                <div class="share-buttons">
+                    <button class="share-btn kakao" id="share-kakao">
+                        <span>💬</span> 카카오톡 공유
+                    </button>
+                    <button class="share-btn link" id="share-link">
+                        <span>🔗</span> 링크 복사
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 행운 가이드 아래 광고 -->
+        <!-- AD: AFTER_LUCK - Native Ad -->
+
+        <!-- 6. 알림 신청 CTA -->
+        <section class="result-card cta-card">
+            <div class="cta-content">
+                <div class="cta-icon">🔔</div>
+                <h3>매일 아침 8시, 오늘의 운세를 받아보세요</h3>
+                <p>무료로 카카오톡 알림을 받을 수 있어요</p>
+                <a href="https://forms.google.com" target="_blank" class="cta-btn" id="subscribe-btn">
+                    무료 알림 신청하기 →
+                </a>
+            </div>
+        </section>
+
+        <!-- 7. 다른 운세 보기 -->
+        <section class="result-card more-card">
+            <div class="card-header">
+                <h2>📌 다른 운세도 확인해보세요</h2>
+            </div>
+
+            <div class="more-menu" id="more-menu">
+                <!-- JS로 생성 -->
+            </div>
+        </section>
+
+        <footer class="main-footer">
+            <p>© 2026 오늘의 사주. All rights reserved.</p>
+            <p class="disclaimer">본 서비스는 재미로 보는 운세입니다.</p>
+        </footer>
+    </div>
+
+    <!-- 하단 고정 광고 -->
+    <!-- AD: BOTTOM_STICKY - 320x50 Anchor Ad -->
+
+    <script src="main.js"></script>
+    <script src="result.js"></script>
+</body>
+</html>

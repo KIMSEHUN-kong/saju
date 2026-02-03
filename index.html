@@ -3,142 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사주팔자 운세</title>
+    <title>오늘의 사주 - 당신의 운세를 확인하세요</title>
     <link rel="stylesheet" href="style.css">
-    <meta name="description" content="생년월일시로 보는 무료 사주팔자 운세 - 재물운, 연애운, 직업운을 확인하세요">
-    <meta property="og:title" content="사주팔자 운세">
-    <meta property="og:description" content="당신의 인생을 비추는 동양의 지혜">
+    <meta name="description" content="오늘의 사주 - 무료 사주팔자, 오늘의 운세, 2026년 운세를 확인하세요">
+    <meta property="og:title" content="오늘의 사주">
+    <meta property="og:description" content="당신의 운세를 확인하세요">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- 상단 배너 광고 -->
+    <!-- AD: TOP_BANNER - 320x100 or Responsive -->
+
     <div class="container">
-        <header>
-            <button id="theme-toggle" aria-label="테마 변경">
-                <span class="icon-sun">☀️</span>
-                <span class="icon-moon">🌙</span>
-            </button>
-            <h1>사주팔자 운세</h1>
-            <p>당신의 인생을 비추는 동양의 지혜</p>
+        <header class="main-header">
+            <div class="logo">
+                <span class="logo-icon">☯</span>
+                <h1>오늘의 사주</h1>
+            </div>
+            <p class="tagline">동양의 지혜로 읽는 당신의 운명</p>
         </header>
 
-        <!-- 입력 섹션 -->
-        <section id="input-section" class="input-section">
-            <h2>생년월일시를 입력하세요</h2>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label for="year">태어난 해</label>
-                    <input type="number" id="year" placeholder="예: 1990" min="1900" max="2030">
-                </div>
-                <div class="input-group">
-                    <label for="month">월</label>
-                    <input type="number" id="month" placeholder="1-12" min="1" max="12">
-                </div>
-                <div class="input-group">
-                    <label for="day">일</label>
-                    <input type="number" id="day" placeholder="1-31" min="1" max="31">
-                </div>
-                <div class="input-group">
-                    <label for="hour">시</label>
-                    <input type="number" id="hour" placeholder="0-23" min="0" max="23">
-                </div>
+        <main class="menu-section">
+            <div class="menu-grid">
+                <!-- 오늘의 운세 -->
+                <a href="input.html?type=today" class="menu-card featured">
+                    <div class="card-icon">🌅</div>
+                    <div class="card-content">
+                        <h2>오늘의 운세</h2>
+                        <p>오늘 하루, 어떤 기운이 흐를까요?</p>
+                    </div>
+                    <span class="card-badge">인기</span>
+                </a>
+
+                <!-- 주간/월간 운세 -->
+                <a href="input.html?type=weekly" class="menu-card">
+                    <div class="card-icon">📅</div>
+                    <div class="card-content">
+                        <h2>주간·월간 운세</h2>
+                        <p>이번 주와 이번 달의 흐름</p>
+                    </div>
+                </a>
+
+                <!-- 2026년 운세 -->
+                <a href="input.html?type=year2026" class="menu-card">
+                    <div class="card-icon">✨</div>
+                    <div class="card-content">
+                        <h2>2026년 운세</h2>
+                        <p>병오년, 새해 운세 총정리</p>
+                    </div>
+                    <span class="card-badge new">NEW</span>
+                </a>
+
+                <!-- 평생 사주 -->
+                <a href="input.html?type=lifetime" class="menu-card">
+                    <div class="card-icon">📜</div>
+                    <div class="card-content">
+                        <h2>평생 사주</h2>
+                        <p>타고난 기운과 인생의 흐름</p>
+                    </div>
+                </a>
+
+                <!-- 행운 가이드 -->
+                <a href="input.html?type=luck" class="menu-card">
+                    <div class="card-icon">🍀</div>
+                    <div class="card-content">
+                        <h2>행운 가이드</h2>
+                        <p>오늘의 행운 컬러·숫자·방향</p>
+                    </div>
+                </a>
             </div>
-            <button id="submit-btn">🔮 사주 보기</button>
+        </main>
+
+        <!-- 중간 피드 광고 -->
+        <!-- AD: FEED_NATIVE - In-feed Native Ad -->
+
+        <section class="info-section">
+            <div class="info-card">
+                <h3>🔒 개인정보 안심</h3>
+                <p>입력하신 생년월일시는 저장되지 않습니다</p>
+            </div>
+            <div class="info-card">
+                <h3>📱 100% 무료</h3>
+                <p>모든 운세 서비스를 무료로 이용하세요</p>
+            </div>
         </section>
 
-        <!-- 결과 섹션 -->
-        <section id="result-section" class="result-section" style="display: none;">
-
-            <!-- 1. 사주 원국 카드 -->
-            <div class="saju-cards">
-                <h2>📜 당신의 사주 원국</h2>
-                <div class="pillar-container" id="pillar-container">
-                    <!-- JS로 생성 -->
-                </div>
-                <div class="one-line-summary" id="one-line-summary">
-                    <!-- JS로 생성 -->
-                </div>
-            </div>
-
-            <!-- 2. 오행 에너지 그래프 -->
-            <div class="energy-section">
-                <h2>⚡ 오행 에너지 분석</h2>
-                <div class="energy-bars" id="energy-bars">
-                    <!-- JS로 생성 -->
-                </div>
-                <p class="energy-description" id="energy-description"></p>
-            </div>
-
-            <!-- 광고 영역 1 -->
-            <div class="ad-placeholder">
-                <span>광고 영역</span>
-            </div>
-
-            <!-- 3. 핵심 운세 풀이 (아코디언) -->
-            <div class="fortune-section">
-                <h2>🌟 3대 핵심 운세</h2>
-
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header" data-target="wealth">
-                            <span>💰 재물운</span>
-                            <span class="accordion-icon">▼</span>
-                        </button>
-                        <div class="accordion-content" id="wealth">
-                            <p id="wealth-content"></p>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <button class="accordion-header" data-target="love">
-                            <span>❤️ 연애·인간관계</span>
-                            <span class="accordion-icon">▼</span>
-                        </button>
-                        <div class="accordion-content" id="love">
-                            <p id="love-content"></p>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <button class="accordion-header" data-target="career">
-                            <span>💼 직업·성공운</span>
-                            <span class="accordion-icon">▼</span>
-                        </button>
-                        <div class="accordion-content" id="career">
-                            <p id="career-content"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. 오늘의 행운 가이드 -->
-            <div class="luck-guide">
-                <h2>🍀 오늘의 행운 가이드</h2>
-                <div class="luck-grid" id="luck-grid">
-                    <!-- JS로 생성 -->
-                </div>
-                <div class="daily-advice" id="daily-advice">
-                    <!-- JS로 생성 -->
-                </div>
-            </div>
-
-            <!-- 광고 영역 2 -->
-            <div class="ad-placeholder">
-                <span>광고 영역</span>
-            </div>
-
-            <!-- 5. CTA 섹션 -->
-            <div class="cta-section">
-                <button class="cta-btn" id="share-kakao">
-                    💬 카카오톡 공유
-                </button>
-                <button class="cta-btn secondary" id="copy-link">
-                    🔗 링크 복사
-                </button>
-                <button class="cta-btn outline" id="retry-btn">
-                    🔄 다시 보기
-                </button>
-            </div>
-        </section>
+        <footer class="main-footer">
+            <p>© 2026 오늘의 사주. All rights reserved.</p>
+            <p class="disclaimer">본 서비스는 재미로 보는 운세입니다.</p>
+        </footer>
     </div>
+
+    <!-- 하단 고정 광고 -->
+    <!-- AD: BOTTOM_STICKY - 320x50 Anchor Ad -->
 
     <script src="main.js"></script>
 </body>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운세 분석 중... - 오늘의 사주</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="loading-page">
+    <!-- 전면 광고 삽입 위치 -->
+    <!-- AD: INTERSTITIAL - Full Screen Interstitial Ad -->
+    <!-- 이 페이지에서 전면 광고를 3초간 노출 후 result.html로 이동 -->
+
+    <div class="container">
+        <div class="loading-content">
+            <div class="loading-animation">
+                <div class="yin-yang">
+                    <div class="yin-yang-inner"></div>
+                </div>
+            </div>
+
+            <div class="loading-text">
+                <h1>운세를 분석하고 있습니다</h1>
+                <p class="loading-status" id="loading-status">사주팔자를 계산하는 중...</p>
+            </div>
+
+            <div class="loading-steps">
+                <div class="step active" id="step1">
+                    <span class="step-icon">📅</span>
+                    <span class="step-text">생년월일시 확인</span>
+                </div>
+                <div class="step" id="step2">
+                    <span class="step-icon">🔮</span>
+                    <span class="step-text">사주팔자 계산</span>
+                </div>
+                <div class="step" id="step3">
+                    <span class="step-icon">⚖️</span>
+                    <span class="step-text">오행 분석</span>
+                </div>
+                <div class="step" id="step4">
+                    <span class="step-icon">✨</span>
+                    <span class="step-text">운세 해석</span>
+                </div>
+            </div>
+
+            <div class="loading-tip">
+                <p id="tip-text">💡 사주팔자는 연주, 월주, 일주, 시주 4개의 기둥으로 이루어져 있습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tips = [
+            "💡 사주팔자는 연주, 월주, 일주, 시주 4개의 기둥으로 이루어져 있습니다.",
+            "💡 일주(일간)는 '나'를 나타내며, 사주에서 가장 중요한 기둥입니다.",
+            "💡 오행(목, 화, 토, 금, 수)의 균형이 좋은 삶의 비결입니다.",
+            "💡 천간은 하늘의 기운, 지지는 땅의 기운을 나타냅니다.",
+            "💡 음양의 조화가 건강과 행운의 기본입니다."
+        ];
+
+        const statuses = [
+            "사주팔자를 계산하는 중...",
+            "천간과 지지를 분석하는 중...",
+            "오행의 균형을 살피는 중...",
+            "운세를 해석하는 중...",
+            "결과를 정리하는 중..."
+        ];
+
+        let currentStep = 0;
+        let tipIndex = 0;
+
+        // 로딩 애니메이션
+        function updateLoading() {
+            currentStep++;
+
+            if (currentStep <= 4) {
+                document.getElementById('step' + currentStep).classList.add('active');
+                document.getElementById('loading-status').textContent = statuses[currentStep];
+            }
+
+            if (currentStep >= 5) {
+                // 결과 페이지로 이동
+                window.location.href = 'result.html';
+            }
+        }
+
+        // 팁 변경
+        function changeTip() {
+            tipIndex = (tipIndex + 1) % tips.length;
+            document.getElementById('tip-text').textContent = tips[tipIndex];
+        }
+
+        // 데이터 확인
+        document.addEventListener('DOMContentLoaded', () => {
+            const sajuData = sessionStorage.getItem('sajuData');
+            if (!sajuData) {
+                // 데이터가 없으면 메인으로
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // 로딩 스텝 진행 (각 0.8초)
+            setInterval(updateLoading, 800);
+
+            // 팁 변경 (2초마다)
+            setInterval(changeTip, 2000);
+        });
+    </script>
+</body>
+</html>
