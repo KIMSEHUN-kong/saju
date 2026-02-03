@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>운세 결과 - 오늘의 사주</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D4AF37">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <!-- 만세력 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar@0.3.6/dist/korean-lunar-calendar.min.js"></script>
 </head>
@@ -121,14 +124,14 @@
         <!-- AD: AFTER_LUCK - Native Ad -->
 
         <!-- 6. 알림 신청 CTA -->
-        <section class="result-card cta-card">
+        <section class="result-card cta-card" id="cta-notification">
             <div class="cta-content">
                 <div class="cta-icon">🔔</div>
-                <h3>매일 아침 8시, 오늘의 운세를 받아보세요</h3>
-                <p>무료로 카카오톡 알림을 받을 수 있어요</p>
-                <a href="https://forms.google.com" target="_blank" class="cta-btn" id="subscribe-btn">
+                <h3>매일 아침 운세 알림 받기</h3>
+                <p>알림을 허용하면 매일 운세를 받아볼 수 있어요</p>
+                <button class="cta-btn" id="subscribe-btn">
                     무료 알림 신청하기 →
-                </a>
+                </button>
             </div>
         </section>
 
@@ -153,6 +156,7 @@
     <!-- AD: BOTTOM_STICKY - 320x50 Anchor Ad -->
 
     <script src="main.js"></script>
+    <script src="notification.js"></script>
     <script src="result.js"></script>
 </body>
 </html>

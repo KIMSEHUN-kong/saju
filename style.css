@@ -203,6 +203,59 @@ body {
     color: var(--dark-gray);
 }
 
+/* 알림 배너 */
+.notification-banner {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.banner-icon {
+    font-size: 2rem;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-text strong {
+    color: var(--gold);
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.banner-text p {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.banner-btn {
+    background: var(--gold);
+    color: var(--navy-dark);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s;
+}
+
+.banner-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
 /* 푸터 */
 .main-footer {
     text-align: center;

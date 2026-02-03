@@ -416,6 +416,32 @@ function setupEventListeners() {
         document.getElementById('copy-result')?.addEventListener('click', copyResultLink);
         document.getElementById('header-share')?.addEventListener('click', copyResultLink);
     }
+
+    // 알림 신청 버튼
+    const ctaSection = document.getElementById('cta-notification');
+    const subscribeBtn = document.getElementById('subscribe-btn');
+
+    if (typeof isNotificationSubscribed === 'function' && isNotificationSubscribed()) {
+        // 이미 구독 중이면 문구 변경
+        if (ctaSection) {
+            ctaSection.querySelector('h3').textContent = '알림 설정 완료! ✅';
+            ctaSection.querySelector('p').textContent = '매일 아침 운세 알림을 받으실 수 있습니다';
+            subscribeBtn.textContent = '알림 해제하기';
+            subscribeBtn.addEventListener('click', () => {
+                unsubscribeNotification();
+                window.location.reload();
+            });
+        }
+    } else {
+        subscribeBtn?.addEventListener('click', async () => {
+            if (typeof subscribeNotification === 'function') {
+                const success = await subscribeNotification();
+                if (success) {
+                    window.location.reload();
+                }
+            }
+        });
+    }
 }
 
 // 결과 링크 생성 및 복사
