@@ -357,8 +357,63 @@ function setupEventListeners() {
         });
     });
 
+    // 카카오 SDK 초기화
+    // ⚠️ 아래 'YOUR_KAKAO_JAVASCRIPT_KEY'를 실제 카카오 앱 키로 교체하세요
+    // 카카오 개발자 센터: https://developers.kakao.com
+    if (window.Kakao && !Kakao.isInitialized()) {
+        Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY');
+    }
+
     // 공유 버튼
-    document.getElementById('share-kakao')?.addEventListener('click', shareKakao);
+    document.getElementById('share-kakao')?.addEventListener('click', shareKakaoResult);
     document.getElementById('share-link')?.addEventListener('click', copyLink);
-    document.getElementById('header-share')?.addEventListener('click', shareKakao);
+    document.getElementById('header-share')?.addEventListener('click', shareKakaoResult);
+}
+
+// 카카오톡 공유 - 운세 결과 포함
+function shareKakaoResult() {
+    const sajuData = JSON.parse(sessionStorage.getItem('sajuData'));
+    const ilganSummary = document.querySelector('.ilgan-summary h3')?.textContent || '사주팔자 운세';
+    const fortuneTitle = document.getElementById('fortune-title')?.textContent || '오늘의 운세';
+
+    // 카카오 SDK가 초기화되지 않았거나 앱키가 없으면 기본 공유
+    if (!window.Kakao || !Kakao.isInitialized() || Kakao.Auth === undefined) {
+        // Web Share API 사용 (모바일)
+        if (navigator.share) {
+            navigator.share({
+                title: '오늘의 사주 - 나의 운세 결과',
+                text: `${ilganSummary}\n${fortuneTitle} 결과를 확인해보세요!`,
+                url: window.location.origin
+            });
+        } else {
+            alert('카카오톡 공유를 사용하려면 카카오 앱 키 설정이 필요합니다.\n링크 복사를 이용해주세요!');
+        }
+        return;
+    }
+
+    // 카카오 공유
+    Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+            title: '오늘의 사주 - 나의 운세 결과',
+            description: `${ilganSummary}\n나도 사주팔자 운세를 확인해봤어요!`,
+            imageUrl: 'https://kimsehun-kong.github.io/saju/og-image.png', // OG 이미지 URL
+            link: {
+                mobileWebUrl: window.location.origin,
+                webUrl: window.location.origin,
+            },
+        },
+        itemContent: {
+            profileText: fortuneTitle,
+        },
+        buttons: [
+            {
+                title: '나도 운세 보기',
+                link: {
+                    mobileWebUrl: window.location.origin,
+                    webUrl: window.location.origin,
+                },
+            },
+        ],
+    });
 }
