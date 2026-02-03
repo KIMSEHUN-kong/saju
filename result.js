@@ -325,7 +325,7 @@ function renderMoreMenu(currentType) {
     menus.forEach(menu => {
         if (menu.type !== currentType) {
             html += `
-                <a href="input.html?type=${menu.type}" class="more-item">
+                <a href="#" class="more-item" data-type="${menu.type}">
                     <span>${menu.icon}</span>
                     <span>${menu.title}</span>
                 </a>
@@ -334,6 +334,18 @@ function renderMoreMenu(currentType) {
     });
 
     container.innerHTML = html;
+
+    // 클릭 시 type만 변경하고 바로 결과 페이지로
+    container.querySelectorAll('.more-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const newType = item.dataset.type;
+            const sajuData = JSON.parse(sessionStorage.getItem('sajuData'));
+            sajuData.type = newType;
+            sessionStorage.setItem('sajuData', JSON.stringify(sajuData));
+            window.location.href = 'loading.html';
+        });
+    });
 }
 
 function setupEventListeners() {
