@@ -91,18 +91,10 @@ const FORTUNE_DATA = {
         ]
     },
 
-    // 평생 사주
+    // 평생 사주 - 동적 생성 (별도 함수에서 처리)
     lifetime: {
         title: '📜 평생 사주 분석',
-        fortunes: [
-            {
-                main: "당신의 사주를 분석해보면, 타고난 기운이 조화롭게 구성되어 있습니다. 특히 일간(日干)의 기운이 강하여 주체적이고 독립적인 성향을 보입니다.\n\n인생 전반부(20~40세)에는 자신을 찾아가는 시기로, 다양한 경험을 통해 성장하게 됩니다. 중반부(40~60세)에는 그동안 쌓은 실력을 바탕으로 성과를 이루는 시기입니다. 후반부(60세 이후)에는 안정과 여유를 누리며 지혜를 나누는 시기가 됩니다.\n\n당신의 삶에서 가장 중요한 것은 '균형'입니다. 일과 삶, 관계와 개인 시간의 균형을 잘 유지하면 더욱 풍요로운 인생을 살 수 있습니다.",
-                wealth: "재물복은 중년 이후에 크게 들어옵니다. 젊은 시절의 노력과 투자가 40대 이후 큰 열매를 맺게 됩니다. 특히 부동산이나 안정적인 자산에서 좋은 결과를 얻을 수 있습니다. 급하게 부를 쫓기보다 꾸준히 쌓아가는 것이 당신에게 맞는 방식입니다.",
-                love: "인연운이 좋은 사주입니다. 진실된 마음으로 다가가면 좋은 인연을 만날 수 있습니다. 결혼 후에는 가정의 기둥 역할을 하게 되며, 배우자와 함께 성장하는 관계를 만들어 갈 수 있습니다. 자녀운도 좋아 화목한 가정을 이룰 복이 있습니다.",
-                health: "기본적으로 건강한 체질이지만, 중년 이후 간과 위장 건강에 신경 써야 합니다. 과음을 피하고 규칙적인 식생활을 유지하세요. 60대 이후에는 관절 건강에도 주의가 필요합니다.",
-                career: "다재다능하여 어떤 분야에서도 성과를 낼 수 있는 사주입니다. 특히 사람을 상대하는 일이나 창의적인 분야에서 두각을 나타낼 수 있습니다. 30대 중반에 인생의 방향이 정해지고, 40대에 자리를 잡게 됩니다."
-            }
-        ]
+        dynamic: true // 동적 생성 플래그
     },
 
     // 행운 가이드
@@ -133,6 +125,322 @@ const LUCKY_COLORS = [
 ];
 
 const LUCKY_DIRECTIONS = ['동쪽', '서쪽', '남쪽', '북쪽', '동북쪽', '동남쪽', '서북쪽', '서남쪽'];
+
+// ===================================
+// 평생 사주 상세 분석 데이터
+// ===================================
+
+// 십신 관계
+const SIPSIN = {
+    비겁: { name: '비겁(比劫)', meaning: '형제, 친구, 경쟁자',
+           strong: '독립심이 강하고 주체적입니다. 자기 일은 스스로 처리하며, 경쟁에서 지지 않으려는 성향이 있습니다.',
+           weak: '협동심을 기르면 좋습니다. 혼자 하려 하기보다 함께하면 더 큰 성과를 낼 수 있습니다.' },
+    식상: { name: '식상(食傷)', meaning: '표현력, 창의력, 자녀',
+           strong: '표현력이 뛰어나고 창의적입니다. 예술적 감각이 있으며, 말과 글로 사람들을 사로잡는 능력이 있습니다.',
+           weak: '자기 표현을 더 적극적으로 하면 좋습니다. 속마음을 드러내는 연습이 필요합니다.' },
+    재성: { name: '재성(財星)', meaning: '재물, 아버지, 현실감각',
+           strong: '재물을 다루는 능력이 뛰어납니다. 현실 감각이 좋고, 돈이 되는 일을 잘 찾아냅니다.',
+           weak: '재테크에 관심을 가지면 좋습니다. 돈에 대한 감각을 키우면 재물운이 상승합니다.' },
+    관성: { name: '관성(官星)', meaning: '직장, 명예, 규율',
+           strong: '책임감이 강하고 규율을 중시합니다. 조직에서 인정받고 출세할 가능성이 높습니다.',
+           weak: '리더십을 기르면 좋습니다. 자신감을 가지고 앞장서는 연습이 필요합니다.' },
+    인성: { name: '인성(印星)', meaning: '학문, 어머니, 지혜',
+           strong: '학습 능력이 뛰어나고 지혜롭습니다. 깊이 있는 사고를 하며, 전문 분야에서 두각을 나타냅니다.',
+           weak: '공부와 자기계발에 투자하면 좋습니다. 배움을 통해 인생이 풀리는 사주입니다.' }
+};
+
+// 지지(월지) 계절별 특성
+const SEASON_TRAITS = {
+    spring: { // 인묘진 (2,3,4)
+        name: '봄',
+        trait: '봄에 태어나 새로운 시작과 성장의 기운을 타고났습니다. 창의적이고 진취적이며, 새로운 것을 시작하는 데 두려움이 없습니다.',
+        strength: '시작하는 힘, 성장 에너지, 희망적 사고',
+        advice: '꾸준함을 기르면 더욱 좋습니다. 시작은 잘하지만 마무리에 신경 쓰세요.'
+    },
+    summer: { // 사오미 (5,6,7)
+        name: '여름',
+        trait: '여름에 태어나 열정과 활력의 기운을 타고났습니다. 밝고 활발하며, 사람들의 중심에 서는 것을 좋아합니다.',
+        strength: '열정, 리더십, 표현력, 사교성',
+        advice: '감정 조절을 배우면 더욱 좋습니다. 때로는 한 발 물러서 상황을 보는 지혜가 필요합니다.'
+    },
+    autumn: { // 신유술 (8,9,10)
+        name: '가을',
+        trait: '가을에 태어나 결실과 성취의 기운을 타고났습니다. 실용적이고 현실적이며, 일의 마무리를 잘합니다.',
+        strength: '마무리 능력, 실용성, 결단력, 집중력',
+        advice: '융통성을 기르면 더욱 좋습니다. 원칙도 중요하지만 상황에 맞는 유연함도 필요합니다.'
+    },
+    winter: { // 해자축 (11,12,1)
+        name: '겨울',
+        trait: '겨울에 태어나 깊은 사고와 지혜의 기운을 타고났습니다. 내면이 깊고 신중하며, 생각이 깊습니다.',
+        strength: '지혜, 인내심, 깊은 사고, 통찰력',
+        advice: '행동력을 기르면 더욱 좋습니다. 생각만 하지 말고 실천으로 옮기는 용기가 필요합니다.'
+    }
+};
+
+// 대운 시기별 운세
+const LIFE_PHASES = {
+    youth: { // 0-20세
+        name: '유년/청소년기 (0~20세)',
+        general: [
+            '이 시기는 기초를 다지는 중요한 때입니다. 학업에 충실하고 다양한 경험을 쌓으세요.',
+            '부모님의 영향을 많이 받는 시기입니다. 좋은 습관과 가치관을 형성하는 것이 중요합니다.',
+            '친구 관계가 인생에 큰 영향을 미칩니다. 좋은 친구를 사귀세요.'
+        ]
+    },
+    earlyAdult: { // 20-35세
+        name: '청년기 (20~35세)',
+        general: [
+            '자신의 정체성을 확립하는 시기입니다. 다양한 도전을 통해 자신이 진정 원하는 것을 찾으세요.',
+            '커리어의 기반을 다지는 중요한 시기입니다. 전문성을 키우는 데 집중하세요.',
+            '인생의 반려자를 만날 가능성이 높은 시기입니다. 진정한 인연을 찾으세요.'
+        ]
+    },
+    middleAdult: { // 35-50세
+        name: '장년기 (35~50세)',
+        general: [
+            '인생의 황금기입니다. 그동안 쌓아온 실력을 발휘하여 큰 성과를 이룰 수 있습니다.',
+            '가정과 일의 균형이 중요한 시기입니다. 어느 한쪽에 치우치지 않도록 주의하세요.',
+            '재물 축적의 최적기입니다. 미래를 위한 자산 관리에 신경 쓰세요.'
+        ]
+    },
+    lateAdult: { // 50-65세
+        name: '중년기 (50~65세)',
+        general: [
+            '인생의 지혜가 깊어지는 시기입니다. 경험을 바탕으로 후배들에게 조언자 역할을 할 수 있습니다.',
+            '건강 관리가 중요해지는 시기입니다. 규칙적인 운동과 건강검진을 소홀히 하지 마세요.',
+            '새로운 취미나 관심사를 찾기 좋은 때입니다. 제2의 인생을 준비하세요.'
+        ]
+    },
+    senior: { // 65세 이후
+        name: '노년기 (65세 이후)',
+        general: [
+            '인생의 완숙기입니다. 그동안 쌓아온 지혜와 경험을 나누며 보람을 느낄 수 있습니다.',
+            '가족과 함께하는 시간을 소중히 여기세요. 손주들에게 좋은 추억을 선물하세요.',
+            '마음의 평화가 중요한 시기입니다. 명상이나 종교 활동이 도움이 될 수 있습니다.'
+        ]
+    }
+};
+
+// 오행별 건강 주의사항
+const ELEMENT_HEALTH = {
+    wood: { organ: '간, 담낭, 눈', advice: '간 건강에 유의하세요. 과음을 피하고, 눈의 피로를 줄이세요. 봄철 건강 관리가 중요합니다.' },
+    fire: { organ: '심장, 소장, 혀', advice: '심장 건강에 유의하세요. 스트레스 관리가 중요하고, 여름철 더위에 주의하세요.' },
+    earth: { organ: '비장, 위장, 입', advice: '소화기 건강에 유의하세요. 규칙적인 식사와 과식 금지가 중요합니다. 환절기에 주의하세요.' },
+    metal: { organ: '폐, 대장, 코', advice: '호흡기 건강에 유의하세요. 미세먼지에 주의하고, 가을철 건조함에 대비하세요.' },
+    water: { organ: '신장, 방광, 귀', advice: '신장 건강에 유의하세요. 충분한 수분 섭취와 겨울철 보온에 신경 쓰세요.' }
+};
+
+// 오행별 적합 직업
+const ELEMENT_CAREER = {
+    wood: ['교육자', '의사', '한의사', '약사', '작가', '기자', '환경 관련업', '농업', '목재업', '가구업'],
+    fire: ['연예인', '방송인', '디자이너', '화가', '조명 관련업', '요리사', 'IT/전자', '에너지 산업'],
+    earth: ['공무원', '부동산', '건축가', '농업', '광업', '요식업', '유통업', '중개업'],
+    metal: ['금융업', '법조인', '군인', '경찰', '기계공학', '자동차', '귀금속', '철강업'],
+    water: ['무역업', '유통업', '수산업', '음료업', '여행업', '운송업', '철학자', '상담사']
+};
+
+// 평생 사주 상세 분석 함수
+function generateLifetimeReading(saju, energy, data) {
+    const ilgan = CHEONGAN[saju.day.gan];
+    const ilganInfo = ILGAN_INFO[ilgan];
+    const ilganElement = CHEONGAN_ELEMENT[saju.day.gan];
+
+    // 월지로 계절 판단
+    const monthJi = saju.month.ji;
+    let season;
+    if ([2, 3, 4].includes(monthJi)) season = 'spring';
+    else if ([5, 6, 7].includes(monthJi)) season = 'summer';
+    else if ([8, 9, 10].includes(monthJi)) season = 'autumn';
+    else season = 'winter';
+
+    const seasonInfo = SEASON_TRAITS[season];
+
+    // 오행 분석
+    const sortedEnergy = Object.entries(energy).sort((a, b) => b[1] - a[1]);
+    const strongestElement = sortedEnergy[0][0];
+    const weakestElement = sortedEnergy[sortedEnergy.length - 1][0];
+
+    // 나이 계산
+    const birthYear = parseInt(data.year);
+    const currentYear = new Date().getFullYear();
+    const age = currentYear - birthYear + 1; // 한국 나이
+
+    // 현재 인생 단계
+    let currentPhase;
+    if (age < 20) currentPhase = 'youth';
+    else if (age < 35) currentPhase = 'earlyAdult';
+    else if (age < 50) currentPhase = 'middleAdult';
+    else if (age < 65) currentPhase = 'lateAdult';
+    else currentPhase = 'senior';
+
+    // 성별
+    const isMale = data.gender === 'male';
+
+    return {
+        ilgan, ilganInfo, ilganElement,
+        season, seasonInfo,
+        strongestElement, weakestElement, sortedEnergy,
+        age, currentPhase, isMale, birthYear
+    };
+}
+
+// 평생 사주 HTML 생성
+function renderLifetimeContent(analysis) {
+    const { ilgan, ilganInfo, ilganElement, season, seasonInfo,
+            strongestElement, weakestElement, sortedEnergy,
+            age, currentPhase, isMale, birthYear } = analysis;
+
+    const phaseInfo = LIFE_PHASES[currentPhase];
+    const healthInfo = ELEMENT_HEALTH[ilganElement];
+    const careerList = ELEMENT_CAREER[strongestElement];
+
+    let html = `
+        <h3>🎯 타고난 기질과 성격</h3>
+        <p><strong>${ilganInfo.symbol}(${CHEONGAN_HANJA[CHEONGAN.indexOf(ilgan)]})</strong>의 기운을 일간으로 타고났습니다.</p>
+        <p>${ilganInfo.personality}</p>
+        <p><strong>✅ 강점:</strong> ${ilganInfo.strength}</p>
+        <p><strong>⚠️ 보완점:</strong> ${ilganInfo.weakness}</p>
+
+        <h3>🌸 태어난 계절의 기운</h3>
+        <p><strong>${seasonInfo.name}</strong>에 태어났습니다.</p>
+        <p>${seasonInfo.trait}</p>
+        <p><strong>타고난 강점:</strong> ${seasonInfo.strength}</p>
+        <p><strong>인생 조언:</strong> ${seasonInfo.advice}</p>
+
+        <h3>⚖️ 오행 에너지 분석</h3>
+        <p>당신의 사주에서 <strong>${ELEMENT_EMOJI[strongestElement]} ${ELEMENT_KR[strongestElement]}</strong> 기운이 가장 강합니다.</p>
+        <p>${SIPSIN[getSimsinFromElement(strongestElement)].strong}</p>
+        <p><strong>${ELEMENT_EMOJI[weakestElement]} ${ELEMENT_KR[weakestElement]}</strong> 기운이 부족합니다.</p>
+        <p>${SIPSIN[getSimsinFromElement(weakestElement)].weak}</p>
+
+        <h3>📅 인생 주기별 운세</h3>
+
+        <p><strong>💒 ${LIFE_PHASES.youth.name}</strong></p>
+        <p>${LIFE_PHASES.youth.general[birthYear % 3]}</p>
+
+        <p><strong>🧑 ${LIFE_PHASES.earlyAdult.name}</strong></p>
+        <p>${LIFE_PHASES.earlyAdult.general[birthYear % 3]}</p>
+        <p>이 시기에 ${isMale ? '직업적 기반을 다지고' : '인생의 중요한 선택을 하게 되며'}, 배우자를 만날 가능성이 높습니다. 특히 ${25 + (birthYear % 5)}세~${30 + (birthYear % 5)}세 사이에 중요한 인연이 있을 수 있습니다.</p>
+
+        <p><strong>👨‍💼 ${LIFE_PHASES.middleAdult.name}</strong></p>
+        <p>${LIFE_PHASES.middleAdult.general[birthYear % 3]}</p>
+        <p>${isMale ? '사회적 성공을 이루는 황금기입니다. 40대 초반에 큰 기회가 찾아옵니다.' : '가정과 커리어 모두에서 성과를 내는 시기입니다. 자녀 교육에 대한 보람을 느낄 수 있습니다.'}</p>
+
+        <p><strong>🧓 ${LIFE_PHASES.lateAdult.name}</strong></p>
+        <p>${LIFE_PHASES.lateAdult.general[birthYear % 3]}</p>
+        <p>50대 ${isMale ? '중반' : '초반'}에 인생의 전환점이 있을 수 있습니다. 새로운 시작을 두려워하지 마세요.</p>
+
+        <p><strong>👴 ${LIFE_PHASES.senior.name}</strong></p>
+        <p>${LIFE_PHASES.senior.general[birthYear % 3]}</p>
+        <p>건강을 잘 관리하면 활기찬 노년을 보낼 수 있습니다. 특히 ${ELEMENT_HEALTH[ilganElement].organ} 건강에 신경 쓰세요.</p>
+    `;
+
+    return html;
+}
+
+// 오행에서 십신 유추 (간략화)
+function getSimsinFromElement(element) {
+    const mapping = {
+        wood: '인성',
+        fire: '비겁',
+        earth: '식상',
+        metal: '재성',
+        water: '관성'
+    };
+    return mapping[element] || '비겁';
+}
+
+// 평생 사주 재물운
+function renderLifetimeWealth(analysis) {
+    const { strongestElement, ilganElement, age, isMale, birthYear } = analysis;
+    const peakAge = 40 + (birthYear % 10);
+
+    return `
+        <p>당신의 재물운은 <strong>중년 이후에 크게 상승</strong>하는 패턴입니다.</p>
+
+        <p><strong>💰 20~30대:</strong> 기반을 다지는 시기입니다. 이 시기에는 저축과 자기계발에 투자하세요. 급하게 큰 돈을 벌려 하기보다 실력을 쌓는 것이 중요합니다. 무리한 투자나 보증은 피하세요.</p>
+
+        <p><strong>💰 40대:</strong> 재물운이 본격적으로 상승하는 시기입니다. 특히 <strong>${peakAge}세 전후</strong>에 큰 재물 기회가 올 수 있습니다. 이 시기에 부동산이나 사업에서 좋은 성과를 낼 수 있습니다.</p>
+
+        <p><strong>💰 50대 이후:</strong> 안정적인 재물 흐름이 이어집니다. 그동안 모은 자산을 잘 관리하고, 노후 준비에 집중하세요. ${isMale ? '자녀에게 너무 많은 지원을 하기보다 자신의 노후를 먼저 챙기세요.' : '부동산 관련 재물운이 특히 좋습니다.'}</p>
+
+        <p><strong>📊 재테크 적합 분야:</strong> ${ELEMENT_CAREER[strongestElement].slice(0, 3).join(', ')} 관련 분야에서 재물운이 좋습니다.</p>
+
+        <p><strong>⚠️ 주의할 점:</strong> ${strongestElement === 'water' ? '유동적인 재물이 많아 관리에 신경 쓰세요.' : strongestElement === 'fire' ? '충동적인 지출을 조심하세요.' : '안정적인 투자가 당신에게 맞습니다.'}</p>
+    `;
+}
+
+// 평생 사주 연애/결혼운
+function renderLifetimeLove(analysis) {
+    const { ilgan, ilganInfo, isMale, birthYear, season } = analysis;
+    const marriageAge = isMale ? 28 + (birthYear % 5) : 26 + (birthYear % 5);
+
+    return `
+        <p>당신은 <strong>${ilganInfo.symbol}</strong>의 기운을 가진 ${isMale ? '남성' : '여성'}으로, 연애와 결혼에서 다음과 같은 특성이 있습니다.</p>
+
+        <p><strong>💕 연애 스타일:</strong> ${ilgan === '갑' || ilgan === '경' ? '주도적이고 적극적인 연애를 합니다. 상대방을 리드하며, 자신의 사랑을 확실하게 표현합니다.' : ilgan === '을' || ilgan === '신' ? '섬세하고 감성적인 연애를 합니다. 상대방의 마음을 잘 헤아리며, 로맨틱한 분위기를 좋아합니다.' : ilgan === '병' || ilgan === '정' ? '열정적이고 드라마틱한 연애를 합니다. 사랑에 올인하는 타입으로, 깊은 사랑을 추구합니다.' : ilgan === '무' || ilgan === '기' ? '안정적이고 신뢰를 중시하는 연애를 합니다. 한 번 마음을 주면 오래 가며, 책임감 있는 파트너입니다.' : '지적이고 깊이 있는 연애를 합니다. 마음이 통하는 사람을 찾으며, 정신적 교감을 중요시합니다.'}</p>
+
+        <p><strong>💒 결혼 적기:</strong> ${marriageAge}세~${marriageAge + 4}세 사이에 좋은 인연을 만날 가능성이 높습니다. ${season === 'spring' ? '봄' : season === 'summer' ? '여름' : season === 'autumn' ? '가을' : '겨울'}에 좋은 인연이 찾아올 수 있습니다.</p>
+
+        <p><strong>👫 이상적인 배우자상:</strong> ${isMale ? '당신에게는 ' + (ilgan === '갑' || ilgan === '병' || ilgan === '무' || ilgan === '경' || ilgan === '임' ? '부드럽고 내조를 잘하는 배우자가 좋습니다. 당신의 강한 기운을 받쳐줄 수 있는 사람이 궁합이 맞습니다.' : '함께 성장할 수 있는 동반자형 배우자가 좋습니다. 서로의 꿈을 응원하는 관계가 이상적입니다.') : '당신에게는 ' + (ilgan === '을' || ilgan === '정' || ilgan === '기' || ilgan === '신' || ilgan === '계' ? '든든하고 믿음직한 배우자가 좋습니다. 당신을 보호하고 지지해줄 수 있는 사람과 궁합이 맞습니다.' : '존경할 수 있는 배우자가 좋습니다. 능력 있고 사회적으로 인정받는 사람에게 끌립니다.')}</p>
+
+        <p><strong>👨‍👩‍👧‍👦 자녀운:</strong> 자녀복이 있는 사주입니다. ${isMale ? '아들과 인연이 깊으며' : '딸과 인연이 깊으며'}, 자녀로 인한 기쁨이 클 것입니다. 자녀 교육에 있어서는 ${ilganInfo.strength.split(',')[0]}을(를) 살려주는 교육이 좋습니다.</p>
+
+        <p><strong>⚠️ 주의할 점:</strong> ${ilgan === '갑' || ilgan === '경' ? '고집을 부리면 관계가 틀어질 수 있습니다. 배우자의 의견도 존중하세요.' : ilgan === '병' || ilgan === '정' ? '감정 기복으로 인한 다툼에 주의하세요. 화가 날 때는 일단 참고 대화하세요.' : '속마음을 표현하세요. 말하지 않으면 배우자도 모릅니다.'}</p>
+    `;
+}
+
+// 평생 사주 건강운
+function renderLifetimeHealth(analysis) {
+    const { ilganElement, sortedEnergy, age } = analysis;
+    const healthInfo = ELEMENT_HEALTH[ilganElement];
+    const weakElement = sortedEnergy[sortedEnergy.length - 1][0];
+    const weakHealthInfo = ELEMENT_HEALTH[weakElement];
+
+    return `
+        <p>일간 오행이 <strong>${ELEMENT_KR[ilganElement]}</strong>이므로, <strong>${healthInfo.organ}</strong> 건강에 특히 주의가 필요합니다.</p>
+
+        <p><strong>🏥 주의해야 할 장기:</strong> ${healthInfo.advice}</p>
+
+        <p><strong>⚠️ 부족한 오행(${ELEMENT_KR[weakElement]}) 관련:</strong> ${weakHealthInfo.organ} 건강도 신경 쓰세요. ${weakHealthInfo.advice}</p>
+
+        <p><strong>📅 나이대별 건강 관리:</strong></p>
+        <p>• <strong>20~30대:</strong> 기초 체력을 다지는 시기입니다. 규칙적인 운동 습관을 들이세요. 야근, 음주, 흡연을 줄이세요.</p>
+        <p>• <strong>40대:</strong> 성인병 검진을 시작하세요. 특히 혈압, 당뇨, 콜레스테롤 관리가 중요합니다.</p>
+        <p>• <strong>50대:</strong> ${healthInfo.organ} 검사를 정기적으로 받으세요. 과로를 피하고 충분한 휴식을 취하세요.</p>
+        <p>• <strong>60대 이후:</strong> 관절과 뼈 건강에 신경 쓰세요. 가벼운 운동(걷기, 수영)을 꾸준히 하세요.</p>
+
+        <p><strong>🍎 건강에 좋은 음식:</strong> ${ilganElement === 'wood' ? '녹색 채소, 신맛 나는 과일, 간에 좋은 음식' : ilganElement === 'fire' ? '붉은색 과일, 쓴맛 나는 음식, 심장에 좋은 음식' : ilganElement === 'earth' ? '노란색 음식, 단맛 나는 음식, 소화에 좋은 음식' : ilganElement === 'metal' ? '흰색 음식, 매운맛 음식, 폐에 좋은 음식' : '검은색 음식, 짠맛 음식, 신장에 좋은 음식'}</p>
+
+        <p><strong>🏃 추천 운동:</strong> ${ilganElement === 'wood' ? '스트레칭, 요가, 등산' : ilganElement === 'fire' ? '달리기, 에어로빅, 댄스' : ilganElement === 'earth' ? '걷기, 태극권, 필라테스' : ilganElement === 'metal' ? '수영, 호흡 운동, 등산' : '수영, 아쿠아로빅, 명상'}</p>
+    `;
+}
+
+// 평생 사주 직업/성공운
+function renderLifetimeCareer(analysis) {
+    const { ilgan, ilganInfo, strongestElement, isMale, birthYear } = analysis;
+    const careers = ELEMENT_CAREER[strongestElement];
+    const peakCareerAge = 42 + (birthYear % 8);
+
+    return `
+        <p>당신의 <strong>${ilganInfo.symbol}</strong> 기운과 <strong>${ELEMENT_KR[strongestElement]}</strong>이 강한 사주를 종합하면, 다음과 같은 직업적 특성이 있습니다.</p>
+
+        <p><strong>💼 적합한 직업군:</strong></p>
+        <p>${careers.map(c => `• ${c}`).join('<br>')}</p>
+
+        <p><strong>🎯 직업 선택 기준:</strong> ${ilgan === '갑' || ilgan === '경' ? '권한과 결정권이 있는 자리가 좋습니다. 조직의 리더나 독립적인 사업가가 맞습니다.' : ilgan === '을' || ilgan === '신' ? '창의성을 발휘할 수 있는 일이 좋습니다. 예술, 디자인, 기획 분야가 맞습니다.' : ilgan === '병' || ilgan === '정' ? '사람들과 소통하는 일이 좋습니다. 영업, 마케팅, 교육 분야가 맞습니다.' : ilgan === '무' || ilgan === '기' ? '안정적인 조직에서 전문성을 쌓는 것이 좋습니다. 공무원, 대기업, 전문직이 맞습니다.' : '지식과 정보를 다루는 일이 좋습니다. 연구, 컨설팅, IT 분야가 맞습니다.'}</p>
+
+        <p><strong>📈 커리어 발전 시기:</strong></p>
+        <p>• <strong>20대:</strong> 다양한 경험을 쌓고 자신에게 맞는 분야를 찾는 시기</p>
+        <p>• <strong>30대:</strong> 전문성을 쌓고 자리를 잡아가는 시기</p>
+        <p>• <strong>40대:</strong> 커리어의 정점을 찍는 시기. 특히 <strong>${peakCareerAge}세 전후</strong>에 큰 성과나 승진의 기회가 있습니다.</p>
+        <p>• <strong>50대:</strong> 후배를 양성하고 노하우를 전수하는 시기</p>
+
+        <p><strong>💡 성공 조언:</strong> ${isMale ? '인맥 관리가 성공의 열쇠입니다. 특히 ' + (birthYear % 2 === 0 ? '선배' : '동료') + '와의 관계를 잘 유지하세요.' : '실력으로 인정받는 것이 중요합니다. ' + (birthYear % 2 === 0 ? '꾸준함' : '차별화된 전문성') + '이 당신의 무기입니다.'}</p>
+
+        <p><strong>⚠️ 주의할 점:</strong> ${strongestElement === 'wood' ? '한 가지에 집중하세요. 이것저것 손대면 성과가 분산됩니다.' : strongestElement === 'fire' ? '끈기를 길러야 합니다. 시작은 잘하지만 마무리가 약할 수 있습니다.' : strongestElement === 'earth' ? '변화를 두려워하지 마세요. 때로는 새로운 도전이 필요합니다.' : strongestElement === 'metal' ? '융통성을 기르세요. 너무 원칙적이면 기회를 놓칠 수 있습니다.' : '실행력을 기르세요. 생각만 하지 말고 행동으로 옮기세요.'}</p>
+    `;
+}
 
 // ===================================
 // 결과 페이지 렌더링
@@ -201,11 +509,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. 오행 에너지 그래프
     renderEnergyChart(energy);
 
+    // 평생 사주 분석 (lifetime인 경우)
+    let lifetimeAnalysis = null;
+    if (type === 'lifetime') {
+        lifetimeAnalysis = generateLifetimeReading(saju, energy, data);
+    }
+
     // 5. 운세 내용
-    renderFortuneContent(fortuneData, seed);
+    renderFortuneContent(fortuneData, seed, lifetimeAnalysis);
 
     // 6. 세부 운세 아코디언
-    renderDetailAccordion(fortuneData, seed);
+    renderDetailAccordion(fortuneData, seed, lifetimeAnalysis);
 
     // 7. 행운 가이드
     renderLuckItems(seed);
@@ -297,35 +611,54 @@ function renderEnergyChart(energy) {
     `;
 }
 
-function renderFortuneContent(fortuneData, seed) {
+function renderFortuneContent(fortuneData, seed, lifetimeAnalysis = null) {
     const container = document.getElementById('fortune-content');
-    const fortune = fortuneData.fortunes[seed % fortuneData.fortunes.length];
 
+    // 평생 사주는 동적 생성
+    if (fortuneData.dynamic && lifetimeAnalysis) {
+        container.innerHTML = renderLifetimeContent(lifetimeAnalysis);
+        return;
+    }
+
+    const fortune = fortuneData.fortunes[seed % fortuneData.fortunes.length];
     container.innerHTML = `<p>${fortune.main.replace(/\n\n/g, '</p><p>')}</p>`;
 }
 
-function renderDetailAccordion(fortuneData, seed) {
+function renderDetailAccordion(fortuneData, seed, lifetimeAnalysis = null) {
     const container = document.getElementById('detail-accordion');
-    const fortune = fortuneData.fortunes[seed % fortuneData.fortunes.length];
 
-    const details = [
-        { icon: '💰', title: '재물운', content: fortune.wealth },
-        { icon: '❤️', title: '연애·인간관계', content: fortune.love },
-        { icon: '🏥', title: '건강운', content: fortune.health },
-        { icon: '💼', title: '직업·성공운', content: fortune.career }
-    ];
+    let details;
+
+    // 평생 사주는 동적 생성
+    if (fortuneData.dynamic && lifetimeAnalysis) {
+        details = [
+            { icon: '💰', title: '평생 재물운', content: renderLifetimeWealth(lifetimeAnalysis) },
+            { icon: '❤️', title: '연애·결혼·가정운', content: renderLifetimeLove(lifetimeAnalysis) },
+            { icon: '🏥', title: '평생 건강운', content: renderLifetimeHealth(lifetimeAnalysis) },
+            { icon: '💼', title: '직업·성공운', content: renderLifetimeCareer(lifetimeAnalysis) }
+        ];
+    } else {
+        const fortune = fortuneData.fortunes[seed % fortuneData.fortunes.length];
+        details = [
+            { icon: '💰', title: '재물운', content: fortune.wealth },
+            { icon: '❤️', title: '연애·인간관계', content: fortune.love },
+            { icon: '🏥', title: '건강운', content: fortune.health },
+            { icon: '💼', title: '직업·성공운', content: fortune.career }
+        ];
+    }
 
     let html = '';
     details.forEach((detail, index) => {
+        const isLifetime = fortuneData.dynamic;
         html += `
-            <div class="accordion-item">
+            <div class="accordion-item${isLifetime ? ' active' : ''}">
                 <button class="accordion-header" data-index="${index}">
                     <span>${detail.icon} ${detail.title}</span>
                     <span class="accordion-icon">▼</span>
                 </button>
-                <div class="accordion-body">
+                <div class="accordion-body"${isLifetime ? ' style="max-height: 2000px;"' : ''}>
                     <div class="accordion-content">
-                        <p>${detail.content}</p>
+                        ${isLifetime ? detail.content : `<p>${detail.content}</p>`}
                     </div>
                 </div>
             </div>
